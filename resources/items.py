@@ -43,7 +43,7 @@ class ItemByIDMethods(MethodView):
         db.session.delete(item)
         db.session.commit()
 
-        return {"message": "item deleted"}
+        return {"message": "Item deleted"}
 
     @jwt_required()
     @blueprint.arguments(schema=ItemUpdateSchema)

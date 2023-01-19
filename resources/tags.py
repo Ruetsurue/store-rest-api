@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.exc import SQLAlchemyError
 from api_lib.db import db
 from api_lib.schemas import TagSchema, TagsByItemsSchema, PlainTagSchema
-from models import TagsModel, ItemsModel
+from models import TagsModel, ItemsModel, StoresModel
 
 blueprint = Blueprint(name="tags", import_name=__name__, description="Operations on tags")
 
@@ -13,6 +13,7 @@ blueprint = Blueprint(name="tags", import_name=__name__, description="Operations
 class TagsInStoreMethods(MethodView):
     @blueprint.response(status_code=200, schema=PlainTagSchema(many=True))
     def get(self, store_id):
+        store_exists = db.get_or_404(entity=StoresModel, ident=store_id)
         statement = db.select(TagsModel).where(TagsModel.store_id == store_id)
         return db.session.execute(statement).scalars().all()
 
@@ -55,7 +56,7 @@ class TagByID(MethodView):
         if not tag.items:
             db.session.delete(tag)
             db.session.commit()
-            return {"message": "tag deleted"}
+            return {"message": f"tag {tag.name} deleted"}
 
         abort(http_status_code=400, message="Tag is still linked to items and will not be deleted")
 
@@ -70,7 +71,7 @@ class LinkUnlinkTags(MethodView):
         item.tags.append(tag)
 
         if item.store_id != tag.store_id:
-            abort(http_status_code=400, message="The item.store_id does not match tag.store_id")
+            abort(http_status_code=400, message="Tag and item belong to different stores")
 
         try:
             db.session.add(item)
@@ -78,7 +79,7 @@ class LinkUnlinkTags(MethodView):
         except SQLAlchemyError as err:
             abort(http_status_code=500, message=f"Insertion error: {str(err)}")
 
-        return {"message": f"linked tag {tag.name} to item {item.name}"}
+        return {"message": f"Tag {tag.name} linked to item {item.name}"}
 
     @jwt_required()
     @blueprint.response(status_code=200, schema=TagsByItemsSchema)
@@ -93,4 +94,4 @@ class LinkUnlinkTags(MethodView):
         except SQLAlchemyError as err:
             abort(http_status_code=500, message=f"Error removing tag from item: {str(err)}")
 
-        return {"message": f"removed link. tag: {tag}, item: {item}"}
+        return {"message": f"Removed tag {tag.name} from item: {item.name}"}

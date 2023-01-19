@@ -43,4 +43,4 @@ class StoreByIDMethods(MethodView):
         db.session.delete(store)
         db.session.commit()
 
-        return {"message": "item deleted"}
+        return {"message": "Store deleted"}
