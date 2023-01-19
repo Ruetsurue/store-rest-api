@@ -1,15 +1,17 @@
 from flask import Flask
 from flask_smorest import Api
 from flask_migrate import Migrate
+from dotenv import load_dotenv
 from resources import tags_blueprint, item_blueprint, store_blueprint, users_blueprint
-from db import db
+from api_lib.db import db
 from api_lib.tokens import create_jwt_manager
 
-import models
 import os
 
 
 def configure_app(app: Flask, *args, **kwargs):
+    load_dotenv()
+
     app.config["PROPAGATE_EXCEPTIONS"] = True
     app.config["API_TITLE"] = "Simple Store API"
     app.config["API_VERSION"] = "v1"

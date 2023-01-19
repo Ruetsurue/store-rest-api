@@ -2,8 +2,8 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import jwt_required
-from schemas import StoreSchema
-from db import db
+from api_lib.schemas import StoreSchema
+from api_lib.db import db
 from models import StoresModel
 
 blueprint = Blueprint(name="stores", import_name=__name__, description="Operations on stores")

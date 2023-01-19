@@ -1,6 +1,6 @@
 from flask_jwt_extended import JWTManager
 from flask import Flask, jsonify
-from db import db
+from api_lib.db import db
 from models import UsersModel
 
 # dummy mocking the token db

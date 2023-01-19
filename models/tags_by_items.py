@@ -1,4 +1,4 @@
-from db import db
+from api_lib.db import db
 
 
 class TagsByItemsModel(db.Model):
