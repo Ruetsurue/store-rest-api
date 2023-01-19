@@ -78,7 +78,7 @@ class LinkUnlinkTags(MethodView):
         except SQLAlchemyError as err:
             abort(http_status_code=500, message=f"Insertion error: {str(err)}")
 
-        return {"message": f"linked tag {tag} to item {item}"}
+        return {"message": f"linked tag {tag.name} to item {item.name}"}
 
     @jwt_required()
     @blueprint.response(status_code=200, schema=TagsByItemsSchema)
