@@ -4,8 +4,10 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.exc import SQLAlchemyError
 from api_lib.schemas import ItemSchema, ItemUpdateSchema
 from api_lib.db import db
+from api_lib.message_templates import DBErrorTemplates as det, EntityInfoTemplates as eit
 from models import ItemsModel
 
+ENTITY_TYPE = 'item'
 blueprint = Blueprint(name="items", import_name=__name__, description="Operations on items")
 
 
@@ -21,12 +23,12 @@ class ItemMethods(MethodView):
     @blueprint.arguments(schema=ItemSchema)
     @blueprint.response(status_code=201, schema=ItemSchema)
     def post(self, item_data):
-        new_item = ItemsModel(**item_data)
+        new_item: ItemsModel = ItemsModel(**item_data)
         try:
             db.session.add(new_item)
             db.session.commit()
         except SQLAlchemyError as err:
-            abort(http_status_code=500, message=f"Error inserting items: {err.args}")
+            abort(http_status_code=500, message=det.db_insertion_err_msg(ENTITY_TYPE, new_item.name, err=err))
 
         return new_item
 
@@ -39,11 +41,11 @@ class ItemByIDMethods(MethodView):
 
     @jwt_required()
     def delete(self, item_id):
-        item = db.get_or_404(entity=ItemsModel, ident=item_id)
+        item: ItemsModel = db.get_or_404(entity=ItemsModel, ident=item_id)
         db.session.delete(item)
         db.session.commit()
 
-        return {"message": "Item deleted"}
+        return eit.entity_deleted_msg(ENTITY_TYPE, item.name, item_id, jsonify=True)
 
     @jwt_required()
     @blueprint.arguments(schema=ItemUpdateSchema)

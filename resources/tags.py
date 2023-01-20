@@ -4,8 +4,10 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.exc import SQLAlchemyError
 from api_lib.db import db
 from api_lib.schemas import TagSchema, TagsByItemsSchema, PlainTagSchema
+from api_lib.message_templates import EntityInfoTemplates as eit
 from models import TagsModel, ItemsModel, StoresModel
 
+ENTITY_TYPE = 'tag'
 blueprint = Blueprint(name="tags", import_name=__name__, description="Operations on tags")
 
 
@@ -51,12 +53,12 @@ class TagByID(MethodView):
     @blueprint.response(status_code=200, description="Removes tag if no item is tagged with it")
     @blueprint.alt_response(status_code=400, description="Tag is still linked to items and will not be deleted")
     def delete(self, tag_id):
-        tag = db.get_or_404(entity=TagsModel, ident=tag_id)
+        tag: TagsModel = db.get_or_404(entity=TagsModel, ident=tag_id)
 
         if not tag.items:
             db.session.delete(tag)
             db.session.commit()
-            return {"message": f"tag {tag.name} deleted"}
+            return eit.entity_deleted_msg(ENTITY_TYPE, tag.name, tag_id, jsonify=True)
 
         abort(http_status_code=400, message="Tag is still linked to items and will not be deleted")
 
