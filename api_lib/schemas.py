@@ -50,4 +50,6 @@ class UserSchema(Schema):
     id = fields.Int(dump_only=True)
     username = fields.Str(required=True)
     password = fields.Str(required=True, load_only=True)
+    email = fields.Str(required=True)
     is_privileged = fields.Boolean(default=False)
+    is_activated = fields.Boolean(dump_only=True)

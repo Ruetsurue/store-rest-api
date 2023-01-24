@@ -4,7 +4,7 @@ from flask_smorest import Blueprint, abort
 from flask_jwt_extended import jwt_required
 from api_lib.schemas import StoreSchema
 from api_lib.db import db
-from api_lib.message_templates import EntityErrorTemplates as eet, EntityInfoTemplates as eit, DBErrorTemplates as det
+from api_lib.msg_templates import EntityErrorTemplates as eet, EntityInfoTemplates as eit, DBErrorTemplates as det
 from models import StoresModel
 
 ENTITY_TYPE = 'store'

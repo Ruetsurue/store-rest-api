@@ -6,4 +6,6 @@ class UsersModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
+    email = db.Column(db.String(), nullable=True)
     is_privileged = db.Column(db.Boolean, default=False)
+    is_activated = db.Column(db.Boolean, default=False)

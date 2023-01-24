@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.exc import SQLAlchemyError
 from api_lib.schemas import ItemSchema, ItemUpdateSchema
 from api_lib.db import db
-from api_lib.message_templates import DBErrorTemplates as det, EntityInfoTemplates as eit
+from api_lib.msg_templates import DBErrorTemplates as det, EntityInfoTemplates as eit
 from models import ItemsModel
 
 ENTITY_TYPE = 'item'

@@ -3,57 +3,63 @@ from typing import Union
 
 
 class MessageTemplates:
-    @staticmethod
-    def _jsonify_message(message: str) -> Response:
+    @classmethod
+    # for use exclusively when returning JSON unwrapped into a Response obj
+    def _jsonify_message(cls, message: str):
         return jsonify({"message": message})
 
-    @staticmethod
-    def _enrich(message: str, *args, **kwargs) -> Union[str, Response]:
+    @classmethod
+    def _enrich(cls, message: str, *args, **kwargs) -> Union[str, Response]:
         if kwargs.get('jsonify'):
             message = MessageTemplates._jsonify_message(message=message)
         return message
 
 
 class ErrorTemplates(MessageTemplates):
-    @staticmethod
-    def _add_err(message: Union[str, Response], err: Exception) -> str:
+    @classmethod
+    def _add_err(cls, message: Union[str, Response], err: Exception) -> str:
         return '\n'.join(message, str(err))
 
-    @staticmethod
-    def _enrich(message: str, *args, **kwargs) -> Union[str, Response]:
+    @classmethod
+    def _enrich(cls, message: str, *args, **kwargs) -> Union[str, Response]:
         if kwargs.get('err'):
             message = ErrorTemplates._add_err(message=message, err=kwargs['err'])
         return super()._enrich(message, *args, **kwargs)
 
 
 class EntityErrorTemplates(ErrorTemplates):
-    @staticmethod
-    def entity_missing_msg(entity_type='', entity_name='', entity_id='', jsonify=False, err=None):
+    @classmethod
+    def entity_missing_msg(cls, entity_type='', entity_name='', entity_id='', jsonify=False, err=None):
         message = f"{entity_type.capitalize()} {entity_name} (id={entity_id}) not found"
         return super()._enrich(message, jsonify=jsonify, err=err)
 
-    @staticmethod
-    def entity_missing_by_name_msg(entity_type='', entity_name='', entity_id='', jsonify=False, err=None):
+    @classmethod
+    def entity_missing_by_name_msg(cls, entity_type='', entity_name='', entity_id='', jsonify=False, err=None):
         message = f"{entity_type.capitalize()} by name {entity_name} not found"
         return super()._enrich(message, jsonify=jsonify, err=err)
 
-    @staticmethod
-    def entity_duplicate_msg(entity_type='', entity_name='', entity_id='', jsonify=False, err=None):
+    @classmethod
+    def entity_duplicate_msg(cls, entity_type='', entity_name='', entity_id='', jsonify=False, err=None):
         message = f"{entity_type.capitalize()} with name {entity_name} already exists"
         return super()._enrich(message, jsonify=jsonify, err=err)
 
 
 class DBErrorTemplates(ErrorTemplates):
-    @staticmethod
-    def db_insertion_err_msg(entity_type='', entity_name='', entity_id='', jsonify=False, err=None):
+    @classmethod
+    def db_insertion_err_msg(cls, entity_type='', entity_name='', entity_id='', jsonify=False, err=None):
         message = f"Error inserting into db:"
         return super()._enrich(message, jsonify=jsonify, err=err)
 
 
 class AuthErrorTemplates(ErrorTemplates):
-    @staticmethod
-    def incorrect_password_msg(entity_type='', entity_name='', entity_id='', jsonify=False, err=None):
+    @classmethod
+    def incorrect_password_msg(cls, entity_type='', entity_name='', entity_id='', jsonify=False, err=None):
         message = f"Failed to authorize. Incorrect password for {entity_type} {entity_name}"
+        return super()._enrich(message, jsonify=jsonify, err=err)
+
+    @classmethod
+    def user_not_activated_msg(cls, entity_type='', entity_name='', entity_id='', jsonify=False, err=None, email=''):
+        message = f"{entity_type.capitalize()} {entity_name} not activated. Check email {email} for activation link"
         return super()._enrich(message, jsonify=jsonify, err=err)
 
 
@@ -62,24 +68,24 @@ class InfoTemplates(MessageTemplates):
 
 
 class EntityInfoTemplates(InfoTemplates):
-    @staticmethod
-    def entity_created_msg(entity_type='', entity_name='', entity_id='', jsonify=False):
+    @classmethod
+    def entity_created_msg(cls, entity_type='', entity_name='', entity_id='', jsonify=False):
         message = f"{entity_type.capitalize()} {entity_name} created"
         return super()._enrich(message, jsonify=jsonify)
 
-    @staticmethod
-    def entity_deleted_msg(entity_type='', entity_name='', entity_id='', jsonify=False):
+    @classmethod
+    def entity_deleted_msg(cls, entity_type='', entity_name='', entity_id='', jsonify=False):
         message = f"{entity_type.capitalize()} {entity_name} (id={entity_id}) deleted"
         return super()._enrich(message, jsonify=jsonify)
 
 
-class AuthInfoTemplates(ErrorTemplates):
-    @staticmethod
-    def incorrect_password_msg(entity_type='', entity_name='', entity_id='', jsonify=False):
-        message = f"Failed to authorize. Incorrect password for {entity_type} {entity_name}"
+class AuthInfoTemplates(InfoTemplates):
+    @classmethod
+    def user_activated_msg(cls, entity_type='', entity_name='', entity_id='', jsonify=False):
+        message = f"Succesfully activated {entity_type} {entity_name}"
         return super()._enrich(message, jsonify=jsonify)
 
-    @staticmethod
-    def logout_msg(jsonify=False):
+    @classmethod
+    def logout_msg(cls, jsonify=False):
         message = f"Logged out"
         return super()._enrich(message, jsonify=jsonify)

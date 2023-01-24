@@ -2,10 +2,19 @@ from flask_jwt_extended import JWTManager
 from flask import Flask, jsonify
 from api_lib.db import db
 from models import UsersModel
+from passlib.hash import pbkdf2_sha256
 
 # dummy mocking the token db
 BLOCKLIST = set()
 # dummy mocking the token db
+
+
+def hash_password(password):
+    return pbkdf2_sha256.hash(password)
+
+
+def confirm_password(attempted_password, db_hash_password):
+    return pbkdf2_sha256.verify(attempted_password, db_hash_password)
 
 
 def revoke_token(token_id):
@@ -14,7 +23,10 @@ def revoke_token(token_id):
 
 def create_jwt_manager(app: Flask):
     jwt = JWTManager(app=app)
+    configure_jwt_loaders(jwt=jwt)
 
+
+def configure_jwt_loaders(jwt: JWTManager):
     @jwt.token_in_blocklist_loader
     def is_token_revoked(jwt_header, jwt_payload):
         return jwt_payload["jti"] in BLOCKLIST
