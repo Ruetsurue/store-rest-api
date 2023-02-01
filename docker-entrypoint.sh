@@ -1,5 +1,6 @@
 #!/bin/sh
 
 flask db upgrade
+pybabel compile -d translations
 
 exec gunicorn --bind 0.0.0.0:80 "app:create_app()"

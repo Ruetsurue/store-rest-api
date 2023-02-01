@@ -1,7 +1,22 @@
 import os
 import requests
+from flask import render_template, make_response
+from api_lib.html_pages import HtmlPages as hp
 
 APP_TITLE = 'Store REST API'
+
+
+def mock_user_confirmation(activation_link: str, repeat=False):
+    ctx = {'activation_link': activation_link}
+    headers = {"content-type": "text/html"}
+
+    if repeat:
+        page = hp.USER_REPEAT_ACTIVATION_PAGE
+    else:
+        page = hp.USER_CREATED_PAGE
+
+    response = make_response(render_template(page, **ctx), 200, headers)
+    return response
 
 
 def send_user_activation_email(activation_link: str, email_to=None):

@@ -1,0 +1,173 @@
+# Russian translations for PROJECT.
+# Copyright (C) 2023 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2023-02-02 02:33+0400\n"
+"PO-Revision-Date: 2023-02-01 03:21+0400\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.11.0\n"
+
+#: api_lib/messages.py:8
+#, fuzzy, python-format
+msgid "User by name %(name)s already exists"
+msgstr "Пользователь с именем %(name)s уже существует"
+
+#: api_lib/messages.py:12
+#, python-format
+msgid "User by name %(name)s not found"
+msgstr "Пользователь с именем %(name)s не найден"
+
+#: api_lib/messages.py:16
+#, fuzzy, python-format
+msgid "User by id %(user_id)s not found"
+msgstr "Пользователь с id %(user_id)s не найден"
+
+#: api_lib/messages.py:20
+#, python-format
+msgid "User %(username)s (id %(user_id)s) successfully deleted"
+msgstr "Пользователь %(username)s (id %(user_id)s) успешно удален"
+
+#: api_lib/messages.py:24
+#, python-format
+msgid "User %(name)s not activated. Check email %(email)s for activation link"
+msgstr ""
+"Пользователь %(name)s не активирован. Проверьте, пришла ли ссылка "
+"активации на эл. адрес %(email)s"
+
+#: api_lib/messages.py:28
+#, python-format
+msgid "Failed to authorize. Incorrect password for user %(name)s"
+msgstr "Не удалось авторизоваться. Неправильный пароль для пользователя %(name)s"
+
+#: api_lib/messages.py:32
+msgid "Logged out"
+msgstr "Выполнен выход из системы"
+
+#: api_lib/messages.py:38
+#, fuzzy, python-format
+msgid "Store by name %(name)s already exists"
+msgstr "Магазин с именем %(name)s уже существует"
+
+#: api_lib/messages.py:42
+#, fuzzy, python-format
+msgid "Store by id %(store_id)s not found"
+msgstr "Магазин с id %(store_id)s не найден"
+
+#: api_lib/messages.py:46
+#, fuzzy, python-format
+msgid "Store %(name)s (id %(store_id)s) successfully deleted"
+msgstr "Магазин %(name)s (id %(store_id)s) успешно удален"
+
+#: api_lib/messages.py:52
+#, fuzzy, python-format
+msgid "Item by name %(name)s already exists"
+msgstr "Товар с именем %(name)s уже существует"
+
+#: api_lib/messages.py:56
+#, fuzzy, python-format
+msgid "Item by id %(item_id)s not found"
+msgstr "Товар с id %(item_id)s не найден"
+
+#: api_lib/messages.py:60
+#, fuzzy, python-format
+msgid "Item %(name)s (id %(item_id)s) successfully deleted"
+msgstr "Товар %(name)s (id %(item_id)s) успешно удален"
+
+#: api_lib/messages.py:66
+#, python-format
+msgid "Tag %(tag_name)s already exists in store %(store_name)s"
+msgstr "Тег %(tag_name)s уже присутствует в магазине %(store_name)s"
+
+#: api_lib/messages.py:70
+#, fuzzy, python-format
+msgid "Tag by id %(tag_id)s not found"
+msgstr "Тег с id %(tag_id)s не найден"
+
+#: api_lib/messages.py:74
+#, fuzzy, python-format
+msgid "Tag %(name)s (id %(tag_id)s) successfully deleted"
+msgstr "Тег %(name)s (id %(tag_id)s) успешно удален"
+
+#: api_lib/messages.py:78
+#, python-format
+msgid "Tag %(tag_name)s successfully linked to item %(item_name)s"
+msgstr "Тег %(tag_name)s успешно закреплен за товаром %(item_name)s"
+
+#: api_lib/messages.py:83
+#, python-format
+msgid "Tag %(tag_name)s successfully unlinked from item %(item_name)s"
+msgstr "Тег %(tag_name)s успешно откреплен от товара %(item_name)s"
+
+#: api_lib/messages.py:88
+#, python-format
+msgid "Tag %(name)s is still linked to items and will not be deleted"
+msgstr "Тег %(name)s не может быть удален, т.к. все еще закреплен за товарами"
+
+#: api_lib/messages.py:92
+#, python-format
+msgid "Tag %(tag_name)s and item %(item_name)s belong to different stores and cannot be linked"
+msgstr "Тег %(tag_name)s и товар %(item_name)s принадлежат разным магазинам и не могут быть связаны"
+
+#: api_lib/messages.py:99
+#, fuzzy, python-format
+msgid "Confirmation by id %(confirmation_id)s not found"
+msgstr "Подтверждение регистрации с id %(confirmation_id)s отсутствует"
+
+#: api_lib/messages.py:103
+msgid "This confirmation is already confirmed"
+msgstr "Это подтверждение регистрации уже было активировано ранее"
+
+#: api_lib/messages.py:107
+msgid "This confirmation has expired"
+msgstr "Это подтверждение регистрации истекло"
+
+#: api_lib/messages.py:111
+msgid "Repeat confirmation letter has been sent"
+msgstr "Выслано повторное письмо с подтверждением регистрации"
+
+#: api_lib/messages.py:117
+#, python-format
+msgid ""
+"Error inserting into db. Error:\n"
+" %(err)s"
+msgstr ""
+"Ошибка вставки в БД. Ошибка:\n"
+" %(err)s"
+
+#: api_lib/messages.py:121
+#, python-format
+msgid ""
+"Error deleting from db. Error:\n"
+" %(err)s"
+msgstr ""
+"Ошибка удаления из БД. Ошибка:\n"
+" %(err)s"
+
+#: api_lib/messages.py:126
+#, fuzzy, python-format
+msgid ""
+"Object with name %(entity_name)s already exists. Error:\n"
+" %(err)s"
+msgstr "Объект по имени %(entity_name)s уже существует. Error:\n"
+" %(err)s"
+
+#: api_lib/messages.py:132
+msgid "This token has been revoked"
+msgstr "Этот токен доступа более недействителен"
+
+#: api_lib/messages.py:136
+msgid "This action requires a fresh token. Re-login"
+msgstr "Для этой операции требуется новый токена доступа. Выполните вход в систему заново"
+

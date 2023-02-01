@@ -52,4 +52,14 @@ class UserSchema(Schema):
     password = fields.Str(required=True, load_only=True)
     email = fields.Str(required=True)
     is_privileged = fields.Boolean(default=False)
-    is_activated = fields.Boolean(dump_only=True)
+
+    # @pre_dump
+    # def _pre(self, user: UsersModel, **kwargs):
+    #     user.latest_confirmation = [user.most_recent_confirmation]
+
+
+class EmailConfirmation(Schema):
+    id = fields.Str(dump_only=True)
+    expires_at = fields.Int(dump_only=True)
+    is_confirmed = fields.Boolean(dump_only=True)
+    user_id = fields.Int(load_only=True)

@@ -1,8 +1,9 @@
-from flask import Flask
+from flask import Flask, request
+from flask_babel import Babel
 from flask_smorest import Api
 from flask_migrate import Migrate
 from dotenv import load_dotenv
-from resources import tags_blueprint, item_blueprint, store_blueprint, users_blueprint
+from resources import Api_Blueprints as ab
 from api_lib.db import db
 from api_lib.tokens import create_jwt_manager
 
@@ -22,17 +23,22 @@ def configure_app(app: Flask, *args, **kwargs):
     app.config["SQLALCHEMY_DATABASE_URI"] = kwargs['db_url'] or os.getenv(key="DATABASE_URL", default="sqlite:///data.db")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_SECRET_KEY"] = kwargs['jwt_secret_key'] or os.getenv(key="JWT_SECRET_KEY", default="momma")
+    app.config["BABEL_DEFAULT_LOCALE"] = 'en_US'
+    app.config["BABEL_DEFAULT_TIMEZONE"] = 'Asia/Yerevan'
+    app.config["LANGUAGES"] = {
+        "ru": "Russian",
+        "en": "English"
+    }
 
     api = Api(app=app)
-
-    api.register_blueprint(blp=store_blueprint)
-    api.register_blueprint(blp=item_blueprint)
-    api.register_blueprint(blp=tags_blueprint)
-    api.register_blueprint(blp=users_blueprint)
+    ab.register_all(api=api)
 
     db.init_app(app=app)
     migrate = Migrate(app=app, db=db)
     jwt = create_jwt_manager(app=app)
 
-    # with app.app_context():
-    #     db.create_all()
+    with app.app_context():
+        # db.create_all()
+        def get_locale():
+            return request.accept_languages.best_match(app.config["LANGUAGES"].keys())
+        babel = Babel(app=app, locale_selector=get_locale)

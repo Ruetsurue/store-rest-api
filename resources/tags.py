@@ -1,99 +1,73 @@
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from flask_jwt_extended import jwt_required
-from sqlalchemy.exc import SQLAlchemyError
-from api_lib.db import db
+
+from api_lib.messages import TagMessages as tm
 from api_lib.schemas import TagSchema, TagsByItemsSchema, PlainTagSchema
-from api_lib.msg_templates import EntityInfoTemplates as eit
 from models import TagsModel, ItemsModel, StoresModel
 
-ENTITY_TYPE = 'tag'
-blueprint = Blueprint(name="tags", import_name=__name__, description="Operations on tags")
+bp = Blueprint(name="tags", import_name=__name__, description="Operations on tags")
 
 
-@blueprint.route("/stores/<int:store_id>/tags")
+@bp.route("/stores/<int:store_id>/tags")
 class TagsInStoreMethods(MethodView):
-    @blueprint.response(status_code=200, schema=PlainTagSchema(many=True))
+    @bp.response(status_code=200, schema=PlainTagSchema(many=True))
     def get(self, store_id):
-        store_exists = db.get_or_404(entity=StoresModel, ident=store_id)
-        statement = db.select(TagsModel).where(TagsModel.store_id == store_id)
-        return db.session.execute(statement).scalars().all()
+        return StoresModel.find_by_id(store_id).tags.all()
 
     @jwt_required()
-    @blueprint.arguments(schema=TagSchema)
-    @blueprint.response(status_code=201, schema=TagSchema)
+    @bp.arguments(schema=TagSchema)
+    @bp.response(status_code=201, schema=TagSchema)
     def post(self, tag_data, store_id):
-        new_tag = TagsModel(**tag_data, store_id=store_id)
-
-        statement = db.select(TagsModel) \
-                      .where(TagsModel.store_id == store_id) \
-                      .where(TagsModel.name == tag_data['name'])
-
-        already_exists = db.session.execute(statement).scalars().all()
+        already_exists: TagsModel = StoresModel.find_by_id(store_id).tags.filter_by(name=tag_data['name']).scalar()
 
         if already_exists:
             abort(http_status_code=409,
-                  message=f"duplicate: store_id {store_id} already has tag {new_tag.name}")
-        try:
-            db.session.add(new_tag)
-            db.session.commit()
-        except SQLAlchemyError as err:
-            abort(http_status_code=500, message=f"{str(err)}")
+                  message=tm.tag_duplicate_msg(tag_data['name'], already_exists.store.name))
 
+        new_tag = TagsModel(**tag_data, store_id=store_id)
+        new_tag.save_to_db()
         return new_tag
 
 
-@blueprint.route("/tags/<int:tag_id>")
+@bp.route("/tags/<int:tag_id>")
 class TagByID(MethodView):
-    @blueprint.response(status_code=200, schema=TagSchema)
+    @bp.response(status_code=200, schema=TagSchema)
     def get(self, tag_id):
-        return db.get_or_404(entity=TagsModel, ident=tag_id)
+        return TagsModel.find_by_id(tag_id)
 
     @jwt_required()
-    @blueprint.response(status_code=200, description="Removes tag if no item is tagged with it")
-    @blueprint.alt_response(status_code=400, description="Tag is still linked to items and will not be deleted")
+    @bp.response(status_code=200, description="Removes tag if no item is tagged with it")
+    @bp.alt_response(status_code=400, description="Tag is still linked to items and will not be deleted")
     def delete(self, tag_id):
-        tag: TagsModel = db.get_or_404(entity=TagsModel, ident=tag_id)
+        tag = TagsModel.find_by_id(tag_id)
 
         if not tag.items:
-            db.session.delete(tag)
-            db.session.commit()
-            return eit.entity_deleted_msg(ENTITY_TYPE, tag.name, tag_id, jsonify=True)
-
-        abort(http_status_code=400, message="Tag is still linked to items and will not be deleted")
+            tag.delete_from_db()
+            return tm.tag_deleted_msg(tag.name, tag.id)
+        abort(http_status_code=400, message=tm.tag_still_linked_msg(tag.name))
 
 
-@blueprint.route("/items/<int:item_id>/tags/<int:tag_id>")
+@bp.route("/items/<int:item_id>/tags/<int:tag_id>")
 class LinkUnlinkTags(MethodView):
     @jwt_required()
-    @blueprint.response(status_code=201, schema=TagsByItemsSchema)
+    @bp.response(status_code=201)
     def post(self, item_id, tag_id):
-        item = ItemsModel.query.get_or_404(item_id)
-        tag = TagsModel.query.get_or_404(tag_id)
+        item = ItemsModel.find_by_id(item_id)
+        tag = TagsModel.find_by_id(tag_id)
         item.tags.append(tag)
 
         if item.store_id != tag.store_id:
-            abort(http_status_code=400, message="Tag and item belong to different stores")
+            abort(http_status_code=400, message=tm.tag_item_stores_dont_match(tag.name, item.name))
 
-        try:
-            db.session.add(item)
-            db.session.commit()
-        except SQLAlchemyError as err:
-            abort(http_status_code=500, message=f"Insertion error: {str(err)}")
-
-        return {"message": f"Tag {tag.name} linked to item {item.name}"}
+        item.save_to_db()
+        return tm.tag_linked_success_msg(tag.name, item.name)
 
     @jwt_required()
-    @blueprint.response(status_code=200, schema=TagsByItemsSchema)
+    @bp.response(status_code=200)
     def delete(self, item_id, tag_id):
-        item = ItemsModel.query.get_or_404(item_id)
-        tag = TagsModel.query.get_or_404(tag_id)
+        item = ItemsModel.find_by_id(item_id)
+        tag = TagsModel.find_by_id(tag_id)
         item.tags.remove(tag)
-
-        try:
-            db.session.add(item)
-            db.session.commit()
-        except SQLAlchemyError as err:
-            abort(http_status_code=500, message=f"Error removing tag from item: {str(err)}")
-
-        return {"message": f"Removed tag {tag.name} from item: {item.name}"}
+        item.save_to_db()
+        return tm.tag_unlinked_success_msg(tag.name, item.name)

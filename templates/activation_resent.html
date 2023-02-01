@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Repeated account activation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='user_activated.css') }}" type="text/css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+</head>
+<body>
+
+  <div class="container-fluid">
+    <div class="jumbotron text-center full-height">
+      <h1>Account created</h1>
+        <p><em>This is a repeated account activation. Click <a href="{{ activation_link }}">here</a> to activate it.</em></p>
+    </div>
+
+    <footer class="text-center">
+      <hr>
+      <p><a href="http://blog.tecladocode.com/" target="_blank">Teclado</a></p>
+    </footer>
+  </div>
+
+</body>
+</html>
